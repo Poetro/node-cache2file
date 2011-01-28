@@ -31,28 +31,24 @@ function generateString(length) {
   setFunk.parallel(function () {
     var errors, getFunk = new Funk;
 
-    errors = Object.keys(this).filter(function (value) {
-      return !value;
-    });
+    // Check for `set` errors.
+    errors = Object.keys(this).filter(function (key) {
+      return !!this[key];
+    }, this);
+    assert.strictEqual(errors.length, 0, "Cache set errors happened");
 
+    // Check for `get` errors.
     Object.keys(data).forEach(function (key) {
-      var val = this[key];
       c2f.get(key, getFunk.result(key));
     }, data);
-
     getFunk.parallel(function () {
-      Object.keys(this).forEach(function (key) {
-        var val = this[key];
-        assert.notEqual(typeof data[key], 'undefined', 'Key does not exist in stored values');
-        assert.strictEqual(val.toString(), data[key], 'The stored value is not the same as the retrieved');
-      }, this);
+      assert.deepEqual(this, data, "The stored values are not the same as the retrieved");
 
       c2f.removeAll(function (err) {
         assert.strictEqual(err, null, 'Failed to delete some cache files');
       }, false, false);
     });
 
-    assert.strictEqual(errors.length, 0, "Cache set errors happened");
 
   });
 
