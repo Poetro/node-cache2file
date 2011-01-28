@@ -1,7 +1,7 @@
 {
   "name": "cache2file",
   "description": "Cache string information to files",
-  "version": "0.1.0",
+  "version": "0.2",
   "author": {
     "name": "Peter Galiba",
     "email": "poetro@poetro.hu",
@@ -11,5 +11,6 @@
   "repository" : {"type": "git" , "url": "http://github.com/Poetro/node-cache2file.git" },
   "homepage": "http://github.com/Poetro/node-cache2file",
   "main": "lib/cache2file.js",
+  "dependencies" : { "funk" : ">=1.0.0" },
   "engines": { "node": ">= 0.2.0" }
 }
