@@ -1,0 +1,460 @@
+<html>
+	<head>
+		<title>Cache2File</title>
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+		<style>body {
+    margin: 0;
+    padding: 0;
+    font: 14px/1.5 'Palatino Linotype', 'Book Antiqua', Palatino, FreeSerif, serif;
+    color: #252519;
+}
+a {
+    color: #252519;
+}
+a:hover {
+    text-decoration: underline;
+    color: #19469D;
+}
+p {
+    margin: 12px 0;
+}
+h1, h2, h3 {
+    margin: 0;
+    padding: 0;
+}
+table#source {
+    width: 100%;
+    border-collapse: collapse;
+}
+table#source td:first-child {
+    padding: 30px 40px 30px 40px;
+    vertical-align: top;
+}
+table#source td:first-child,
+table#source td:first-child pre {
+    width: 450px;
+}
+table#source td:last-child {
+    padding: 30px 0 30px 40px;
+    border-left: 1px solid #E5E5EE;
+    background: #F5F5FF;
+}
+table#source tr {
+    border-bottom: 1px solid #E5E5EE;
+}
+table#source tr.filename {
+    padding-top: 40px;
+    border-top: 1px solid #E5E5EE;
+}
+table#source tr.filename td:first-child {
+    text-transform: capitalize;
+}
+table#source tr.filename td:last-child {
+    font-size: 12px;
+}
+table#source tr.filename h2 {
+    margin: 0;
+    padding: 0;
+    cursor: pointer;
+}
+table#source tr.code h1,
+table#source tr.code h2,
+table#source tr.code h3 {
+    margin-top: 30px;
+    font-family: "Lucida Grande", "Helvetica Nueue", Arial, sans-serif;
+    font-size: 18px;
+}
+table#source tr.code h2 {
+    font-size: 16px;
+}
+table#source tr.code h3 {
+    font-size: 14px;
+}
+table#source tr.code ul {
+    margin: 15px 0 15px 35px;
+    padding: 0;
+}
+table#source tr.code ul li {
+    margin: 0;
+    padding: 1px 0;
+}
+table#source tr.code ul li p {
+    margin: 0;
+    padding: 0;
+}
+table#source tr.code td:first-child pre {
+    padding: 20px;
+}
+#ribbon {
+    position: fixed;
+    top: 0;
+    right: 0;
+}
+code .string { color: #219161; }
+code .regexp { color: #219161; }
+code .keyword { color: #954121; }
+code .number { color: #19469D; }
+code .comment { color: #bbb; }
+code .this { color: #19469D; }</style>
+		<script>
+			$(function(){
+				$('tr.code').hide();
+				$('tr.filename').toggle(function(){
+					$(this).nextUntil('.filename').fadeIn();
+				}, function(){
+					$(this).nextUntil('.filename').fadeOut();
+				});
+			});
+		</script>
+	</head>
+	<body>
+<table id="source"><tbody><tr><td><h1>Cache2File</h1><p>Stores cache data in files that can expire. Stored data can be in any format#Cache to File module for Node.js</p>
+
+<p>It stores cache data in files that can expire. Stored data can be in any format
+<code>Buffer</code> supports (<code>utf8</code> [default], <code>ascii</code>, <code>binary</code>).</p>
+
+<h1>Install</h1>
+
+<pre><code>npm install cache2file</code></pre>
+
+<h1>Usage</h1>
+
+<pre><code>var Cache2File = require('cache2file'),
+    // Path to store the cache files
+    cachePath = './cache',
+    // Timeout in milliseconds
+    timeout = 60000,
+    // Generate a new cache
+    cache = new Cache2File(cachePath, timeout);
+
+cache.set('cacheKey', doIntensiveStuff());
+
+// ... some time later
+cache.get('cacheKey', function (err, data) {
+  if (!err) {
+    // We have the data, do whatever we want.
+  }
+  else {
+    // Cache timed out, or removed, so store it again.
+    data = doIntensiveStuff();
+    cache.set('cacheKey', data);
+  }
+
+  processData(data);
+});
+
+// Remove cached data.
+cache.remove('cacheKey');</code></pre>
+
+<p>Cache2File uses it's own function <code>Cache2File.generateKey</code> to generate a hash
+for the filename to store data in. It can be replaced with your own filename
+generating algorithm if you wish. Hashing was generally required to only have
+ascii characters in filenames and no <code>/</code> characters, as there is no restriction
+for the characters in the <code>key</code>.</p>
+
+<p><code>key</code>'s string value should be less then 200 characters so the filesystem can
+handle the filename.</p>
+
+<p>To remove multiple cache files, use
+    cache.removeAll(callback, keyCached, expired)</p>
+
+<p>Where if <code>keyCached</code> is set to <code>true</code>, remove those whose key was touched in the
+lifetime of the cache object. If it is <code>false</code> (default) all cache files in the
+cache directory will be removed (those that has the extension <code>.cache</code>).&lt;br&gt;
+If <code>expired</code> is set to <code>true</code> (default is <code>false</code>) it will only remove expired
+cache files.&lt;br&gt;
+These filters can be combined.</p>
+
+<h2>TODO</h2>
+
+<p>Handle cache read / write concurrency.</p></td><td></td></tr><tr class="filename"><td><h2 id="cache2file.js"><a href="#">cache2file</a></h2></td><td>cache2file.js</td></tr><tr class="code">
+<td class="docs">
+<ul><li><p><strong>fileOverview</strong>: <em>Cache2File</em>
+module. Stores cache data in files that can expire.
+Stored data can be in any format <code>Buffer</code> supports
+(<code>utf8</code> [default], <code>ascii</code>, <code>binary</code>).</p></li><li><p><strong>author</strong>: <em>Peter</em>
+(Poetro) Galiba &lt;poetro at poetro dot hu&gt;</p></li><li><p><strong>version</strong>: <em>0</em>
+.2.1</p></li><li><p><strong>requires</strong>: <em>fs</em></p></li><li><p><strong>requires</strong>: <em>path</em></p></li><li><p><strong>requires</strong>: <em>funk</em></p></li></ul>
+</td>
+<td class="code">
+<pre><code><span class="keyword">var</span> <span class="variable">fs</span> = <span class="variable">require</span>(<span class="string">'fs'</span>),
+    <span class="variable">path</span> = <span class="variable">require</span>(<span class="string">'path'</span>),
+    <span class="class">Funk</span> = <span class="variable">require</span>(<span class="string">'funk'</span>);</code></pre>
+</td>
+</tr>
+<tr class="code">
+<td class="docs">
+<p>Manage key - value caching into files.
+ - <strong>class</strong>: <em>Cache2File</em></p>
+
+<h2></h2>
+
+<ul><li><p><strong>property</strong>: <em>String</em>  path</p><p>Path to the cache directory.</p></li><li><p><strong>property</strong>: <em>Number</em>  timeout</p><p>Timeout of cache files in milliseconds.</p></li><li><p><strong>property</strong>: <em>Object</em>  keyCache</p><p>Hash table for mapping generated file identifier to cache key.</p></li></ul>
+</td>
+<td class="code">
+
+</td>
+</tr>
+<tr class="code">
+<td class="docs">
+<p>Manage key - value caching into files.
+ - <strong>constructor</strong>: <em>Cache2File</em></p>
+
+<h2></h2>
+
+<ul><li><p><strong>param</strong>: <em>String</em>  path</p><p>Path to the cache directory.</p></li><li><p><strong>param</strong>: <em>Number</em>  timeout</p><p>Timeout of cache files in milliseconds.</p></li></ul>
+</td>
+<td class="code">
+<pre><code><span class="keyword">function</span> <span class="class">Cache2File</span>(<span class="variable">path</span>, <span class="variable">timeout</span>) {
+  <span class="comment">// Only allow calling as a constructor.</span>
+  <span class="keyword">if</span> (!(<span class="this">this</span> <span class="variable">instanceof</span> <span class="class">Cache2File</span>)) <span class="keyword">return</span> <span class="keyword">new</span> <span class="class">Cache2File</span>(<span class="variable">path</span>, <span class="variable">timeout</span>);
+  <span class="this">this</span>.<span class="variable">path</span> = <span class="variable">path</span> || <span class="string">'./cache'</span>;
+  <span class="this">this</span>.<span class="variable">timeout</span> = <span class="variable">timeout</span> || <span class="variable">e5</span>;
+  <span class="this">this</span>.<span class="variable">keyCache</span> = {};
+}</code></pre>
+</td>
+</tr>
+<tr class="code">
+<td class="docs">
+<p>Function placeholder.
+ </p>
+</td>
+<td class="code">
+<pre><code><span class="keyword">function</span> <span class="variable">noop</span>() {}</code></pre>
+</td>
+</tr>
+<tr class="code">
+<td class="docs">
+<p>Remove the files specified cache files.</p>
+
+<p>If <code>expired</code> is true, only the expired cache files will be unlinked.</p>
+
+<h2></h2>
+
+<ul><li><p><strong>param</strong>: <em>Array</em>  files</p><p>List of files to delete.</p></li><li><p><strong>param</strong>: <em>Boolean</em>  expired</p><p>Only delete the files, if it has expired.</p></li><li><p><strong>param</strong>: <em>Function</em>  callback</p><p>The callback function will be called, when all files are processed.
+It will be called with passing in an object keyed by the file's name,
+if any errors occured, or null otherwise.</p></li></ul>
+</td>
+<td class="code">
+<pre><code><span class="keyword">function</span> <span class="variable">removeFiles</span>(<span class="variable">files</span>, <span class="variable">expired</span>, <span class="variable">callback</span>, <span class="variable">timeout</span>) {
+  <span class="keyword">var</span> <span class="variable">funk</span> = <span class="keyword">new</span> <span class="class">Funk</span>;
+  <span class="keyword">if</span> (<span class="variable">expired</span>) {
+    <span class="variable">funk</span>.<span class="variable">set</span>(<span class="string">'files'</span>, []);
+  }
+  <span class="keyword">else</span> {
+    <span class="variable">funk</span>.<span class="variable">set</span>(<span class="string">'errors'</span>, {});
+  }
+
+  <span class="comment">// Go through the files.</span>
+  <span class="variable">files</span>.<span class="variable">forEach</span>(<span class="keyword">function</span> (<span class="variable">cacheFile</span>) {
+    <span class="keyword">if</span> (<span class="variable">expired</span>) {
+      <span class="comment">// Need to check for expired files.</span>
+      <span class="variable">fs</span>.<span class="variable">stat</span>(<span class="variable">cacheFile</span>, <span class="variable">funk</span>.<span class="variable">add</span>(<span class="keyword">function</span> (<span class="variable">err</span>, <span class="variable">stats</span>) {
+        <span class="keyword">if</span> (!<span class="variable">err</span> &<span class="variable">amp</span>;&<span class="variable">amp</span>; <span class="class">Date</span>.<span class="variable">now</span>() - <span class="class">Date</span>.<span class="variable">parse</span>(<span class="variable">stats</span>.<span class="variable">ctime</span>) &<span class="variable">gt</span>; <span class="variable">timeout</span>) {
+          <span class="this">this</span>.<span class="variable">files</span>.<span class="variable">push</span>(<span class="variable">cacheFile</span>);
+        }
+      }));
+    }
+    <span class="keyword">else</span> {
+      <span class="comment">// Remove all the files, and keep track of the errors.</span>
+      <span class="variable">fs</span>.<span class="variable">unlink</span>(<span class="variable">cacheFile</span>, <span class="variable">funk</span>.<span class="variable">add</span>(<span class="keyword">function</span> (<span class="variable">err</span>) {
+        <span class="keyword">if</span> (<span class="variable">err</span>) {
+          <span class="this">this</span>.<span class="variable">errors</span>[<span class="variable">cacheFile</span>] = <span class="variable">err</span>;
+        }
+      }));
+    }
+  });
+
+  <span class="comment">// Run the callbacks parallel</span>
+  <span class="variable">funk</span>.<span class="variable">parallel</span>(<span class="keyword">function</span> () {
+    <span class="keyword">if</span> (<span class="variable">expired</span>) {
+      <span class="comment">// There is a list of files, that are expired delete them.</span>
+      <span class="variable">removeFiles</span>(<span class="this">this</span>.<span class="variable">files</span>, <span class="variable">false</span>, <span class="variable">callback</span>, <span class="variable">timeout</span>);
+    }
+    <span class="keyword">else</span> {
+      <span class="comment">// Deletion completed, call the callback passing the errors.</span>
+      <span class="variable">callback</span>(<span class="class">Object</span>.<span class="variable">keys</span>(<span class="this">this</span>.<span class="variable">errors</span>).<span class="variable">length</span> ? <span class="this">this</span>.<span class="variable">errors</span> : <span class="keyword">null</span>);
+    }
+  });
+}</code></pre>
+</td>
+</tr>
+<tr class="code">
+<td class="docs">
+<p>Generate a hash from the key that will serve as the base for the generated file.</p>
+
+<h2></h2>
+
+<ul><li><p><strong>param</strong>: <em>String</em>  key</p><p>The key to generate hash for.</p></li><li><p><strong>returns</strong>: <em>String</em> </p><p>Hashed value.</p></li></ul>
+</td>
+<td class="code">
+<pre><code><span class="class">Cache2File</span>.<span class="variable">generateKey</span> = <span class="keyword">function</span> (<span class="variable">key</span>) {
+  <span class="keyword">return</span> (<span class="keyword">new</span> <span class="class">Buffer</span>(<span class="variable">key</span>.<span class="variable">toString</span>())).<span class="variable">toString</span>(<span class="string">'base64'</span>)
+            .<span class="variable">slice</span>(<span class="number integer">0</span>, -<span class="number integer">2</span>).<span class="variable">replace</span>(<span class="regexp">/\+/g</span>, <span class="string">'-'</span>).<span class="variable">replace</span>(<span class="regexp">/\/</span>/<span class="variable">g</span>, <span class="string">'_'</span>);
+};
+
+<span class="class">Cache2File</span>.<span class="variable">prototype</span> = {</code></pre>
+</td>
+</tr>
+<tr class="code">
+<td class="docs">
+<p>Generate a hash key / return one from the already generated key cache, if exists.</p>
+
+<h2></h2>
+
+<ul><li><p><strong>param</strong>: <em>String</em>  key</p><p>The key to generate the hash for.</p></li><li><p><strong>returns</strong>: <em>String</em> </p><p>Hashed value of string. @see Cache2File.generateKey().</p></li></ul>
+</td>
+<td class="code">
+<pre><code><span class="variable">generateKey</span>: <span class="keyword">function</span> (<span class="variable">key</span>) {
+    <span class="keyword">if</span> (!(<span class="variable">key</span> <span class="keyword">in</span> <span class="this">this</span>.<span class="variable">keyCache</span>)) {
+      <span class="this">this</span>.<span class="variable">keyCache</span>[<span class="variable">key</span>] = <span class="class">Cache2File</span>.<span class="variable">generateKey</span>(<span class="variable">key</span>);
+    }
+
+    <span class="keyword">return</span> <span class="this">this</span>.<span class="variable">keyCache</span>[<span class="variable">key</span>];
+  },</code></pre>
+</td>
+</tr>
+<tr class="code">
+<td class="docs">
+<p>Get a value for the specified key.</p>
+
+<h2></h2>
+
+<ul><li><p><strong>param</strong>: <em>String</em>  key</p><p>The key for the value to fetch.</p></li><li><p><strong>param</strong>: <em>Function</em>  callback</p><p>The function to call with the fetched data with.
+The callback has 2 arguments: <code>err</code>, <code>data</code>,
+where <code>data</code> is the content if no errors occured and the cache hasn't expired.</p></li><li><p><strong>param</strong>: <em>String</em>  [encoding]</p><p>The encoding to fetch the information in is optional.</p></li></ul>
+</td>
+<td class="code">
+<pre><code><span class="variable">get</span>: <span class="keyword">function</span> (<span class="variable">key</span>, <span class="variable">callback</span>, <span class="variable">encoding_</span>) {
+    <span class="keyword">var</span> <span class="variable">encoding</span> = <span class="keyword">typeof</span> <span class="variable">encoding_</span> === <span class="string">'string'</span> ? <span class="variable">encoding_</span> : <span class="keyword">null</span>,
+        <span class="variable">cacheFile</span> = <span class="variable">path</span>.<span class="variable">join</span>(<span class="this">this</span>.<span class="variable">path</span>, <span class="this">this</span>.<span class="variable">generateKey</span>(<span class="variable">key</span>) + <span class="string">'.cache'</span>),
+        <span class="variable">timeout</span> = <span class="this">this</span>.<span class="variable">timeout</span>;
+
+    <span class="variable">callback</span> = (<span class="keyword">typeof</span> <span class="variable">callback</span> === <span class="string">'function'</span> ? <span class="variable">callback</span> : <span class="variable">noop</span>);
+
+    <span class="comment">// Check for file cache</span>
+    <span class="variable">fs</span>.<span class="variable">stat</span>(<span class="variable">cacheFile</span>, <span class="keyword">function</span> (<span class="variable">err</span>, <span class="variable">stats</span>) {
+      <span class="keyword">var</span> <span class="variable">date</span>, <span class="variable">expired</span> = <span class="variable">true</span>;
+      <span class="keyword">if</span> (!<span class="variable">err</span>) {
+        <span class="comment">// File exists, check if it expired</span>
+        <span class="keyword">if</span> (<span class="class">Date</span>.<span class="variable">now</span>() - <span class="class">Date</span>.<span class="variable">parse</span>(<span class="variable">stats</span>.<span class="variable">ctime</span>) &<span class="variable">lt</span>; <span class="variable">timeout</span>) {
+          <span class="variable">expired</span> = <span class="variable">false</span>;
+        }
+      }
+
+      <span class="keyword">if</span> (<span class="variable">expired</span>) {
+        <span class="comment">// File has expired call it with error.</span>
+        <span class="variable">callback</span>(<span class="variable">true</span>, <span class="keyword">null</span>);
+      } <span class="keyword">else</span> {
+        <span class="comment">// Load the cache file...</span>
+        <span class="variable">fs</span>.<span class="variable">readFile</span>(<span class="variable">cacheFile</span>, <span class="variable">encoding</span>, <span class="keyword">function</span> (<span class="variable">err</span>, <span class="variable">data</span>) {
+          <span class="variable">callback</span>(<span class="variable">err</span>, <span class="variable">data</span> &<span class="variable">amp</span>;&<span class="variable">amp</span>; <span class="variable">data</span>.<span class="variable">toString</span>());
+        });
+      }
+    });
+  },</code></pre>
+</td>
+</tr>
+<tr class="code">
+<td class="docs">
+<p>Get a value for the specified key.</p>
+
+<h2></h2>
+
+<ul><li><p><strong>param</strong>: <em>String</em>  key</p><p>The key for the value to fetch.</p></li><li><p><strong>param</strong>: <em>String | Buffer</em>  data</p><p>Data to write to the cache.</p></li><li><p><strong>param</strong>: <em>String</em>  [encoding]</p><p>The encoding to fetch the information in is optional.</p></li><li><p><strong>param</strong>: <em>Function</em>  [callback]</p><p>The function to call with when the setting finished is optional.
+The callback has an <code>err</code> argument and stores the errors if any occured.</p></li></ul>
+</td>
+<td class="code">
+<pre><code><span class="variable">set</span>: <span class="keyword">function</span> (<span class="variable">key</span>, <span class="variable">data</span>, <span class="variable">encoding_</span>, <span class="variable">callback</span>) {
+    <span class="keyword">var</span> <span class="variable">encoding</span> = <span class="keyword">typeof</span> <span class="variable">encoding_</span> === <span class="string">'string'</span> ? <span class="variable">encoding_</span> : <span class="keyword">null</span>,
+        <span class="variable">cacheFile</span> = <span class="variable">path</span>.<span class="variable">join</span>(<span class="this">this</span>.<span class="variable">path</span>, <span class="this">this</span>.<span class="variable">generateKey</span>(<span class="variable">key</span>) + <span class="string">'.cache'</span>);
+
+    <span class="keyword">if</span> (<span class="keyword">typeof</span> <span class="variable">data</span> !== <span class="string">'string'</span> &<span class="variable">amp</span>;&<span class="variable">amp</span>; !(<span class="variable">data</span> <span class="variable">instanceof</span> <span class="class">Buffer</span>)) {
+      <span class="variable">data</span> = <span class="variable">data</span>.<span class="variable">toString</span>();
+    }
+
+
+    <span class="variable">callback</span> = <span class="variable">arguments</span>[<span class="variable">arguments</span>.<span class="variable">length</span> - <span class="number integer">1</span>];
+    <span class="variable">callback</span> = (<span class="keyword">typeof</span> <span class="variable">callback</span> === <span class="string">'function'</span> ? <span class="variable">callback</span> : <span class="variable">noop</span>);
+
+    <span class="variable">fs</span>.<span class="variable">writeFile</span>(<span class="variable">cacheFile</span>, <span class="variable">data</span>, <span class="variable">encoding</span>, <span class="variable">callback</span>);
+  },</code></pre>
+</td>
+</tr>
+<tr class="code">
+<td class="docs">
+<p>Remove a cache file.</p>
+
+<h2></h2>
+
+<ul><li><p><strong>param</strong>: <em>String</em>  key</p><p>The key to remove the cache for.</p></li><li><p><strong>param</strong>: <em>Function</em>  callback</p><p>The callback will be called after the file is unlinked
+passing the error if present. @see fs.unlink()</p></li></ul>
+</td>
+<td class="code">
+<pre><code><span class="variable">remove</span>: <span class="keyword">function</span> (<span class="variable">key</span>, <span class="variable">callback</span>) {
+    <span class="keyword">var</span> <span class="variable">cacheFile</span> = <span class="variable">path</span>.<span class="variable">join</span>(<span class="this">this</span>.<span class="variable">path</span>, <span class="this">this</span>.<span class="variable">generateKey</span>(<span class="variable">key</span>) + <span class="string">'.cache'</span>);
+
+    <span class="variable">callback</span> = (<span class="keyword">typeof</span> <span class="variable">callback</span> === <span class="string">'function'</span> ? <span class="variable">callback</span> : <span class="variable">noop</span>);
+
+    <span class="variable">fs</span>.<span class="variable">unlink</span>(<span class="variable">cacheFile</span>, <span class="variable">callback</span>);
+  },</code></pre>
+</td>
+</tr>
+<tr class="code">
+<td class="docs">
+<p>Remove all (or a subset of) cache files.</p>
+
+<p>The parameters <code>keyCached</code> and <code>expired</code> can be combined in any ways,
+they filter the set of removed files.</p>
+
+<h2></h2>
+
+<ul><li><p><strong>param</strong>: <em>Function</em>  [callback]</p><p>The callback function will be called, when all files are processed.
+It will be called with passing in an object keyed by the file's name,
+if any errors occured, or null otherwise.</p></li><li><p><strong>param</strong>: <em>Boolean</em>  [keyCached]</p><p>Only remove the files, whose key is already cached
+(aka used in this Cache2File object already). Optional, default is false.</p></li><li><p><strong>param</strong>: <em>Boolean</em>  [expired]</p><p>Only remove those that files are already expired. Optional, default is false.</p></li></ul>
+</td>
+<td class="code">
+<pre><code><span class="variable">removeAll</span>: <span class="keyword">function</span> (<span class="variable">callback</span>, <span class="variable">keyCached</span>, <span class="variable">expired</span>) {
+    <span class="keyword">var</span> <span class="variable">timeout</span> = <span class="this">this</span>.<span class="variable">timeout</span>,
+        <span class="variable">cache</span> = <span class="this">this</span>;
+    <span class="variable">callback</span> = (<span class="keyword">typeof</span> <span class="variable">callback</span> === <span class="string">'function'</span> ? <span class="variable">callback</span> : <span class="variable">noop</span>);
+
+    <span class="keyword">if</span> (<span class="variable">keyCached</span>) {
+      <span class="variable">removeFiles</span>(<span class="class">Object</span>.<span class="variable">keys</span>(<span class="this">this</span>.<span class="variable">keyCache</span>).<span class="variable">map</span>(<span class="keyword">function</span> (<span class="variable">key</span>) {
+        <span class="keyword">return</span> <span class="this">this</span>[<span class="variable">key</span>];
+      }, <span class="this">this</span>.<span class="variable">keyCache</span>), <span class="variable">expired</span>, <span class="variable">callback</span>, <span class="variable">timeout</span>);
+    }
+    <span class="keyword">else</span> {
+      <span class="variable">fs</span>.<span class="variable">readdir</span>(<span class="this">this</span>.<span class="variable">path</span>, <span class="keyword">function</span> (<span class="variable">err</span>, <span class="variable">files</span>) {
+        <span class="keyword">var</span> <span class="variable">fileTest</span>;
+        <span class="keyword">if</span> (!<span class="variable">err</span>) {
+          <span class="variable">fileTest</span> = <span class="regexp">/\.cache$/</span>;
+          <span class="variable">removeFiles</span>(
+            <span class="variable">files</span>.<span class="variable">filter</span>(<span class="keyword">function</span> (<span class="variable">file</span>) {
+              <span class="keyword">return</span> <span class="variable">fileTest</span>.<span class="variable">test</span>(<span class="variable">file</span>);
+            }).<span class="variable">map</span>(<span class="keyword">function</span> (<span class="variable">file</span>) {
+              <span class="keyword">return</span> <span class="variable">path</span>.<span class="variable">join</span>(<span class="variable">cache</span>.<span class="variable">path</span>, <span class="variable">file</span>);
+            }),
+            <span class="variable">expired</span>,
+            <span class="variable">callback</span>,
+            <span class="variable">timeout</span>);
+        }
+        <span class="keyword">else</span> {
+          <span class="variable">callback</span>([<span class="variable">err</span>]);
+        }
+      });
+    }
+  }
+};</code></pre>
+</td>
+</tr>
+<tr class="code">
+<td class="docs">
+<ul><li><p><strong>exports</strong>: <em>Cache2File</em></p></li></ul>
+</td>
+<td class="code">
+<pre><code><span class="variable">module</span>.<span class="variable">exports</span> = <span class="class">Cache2File</span>;</code></pre>
+</td>
+</tr>	</body>
+</html></tbody></table>

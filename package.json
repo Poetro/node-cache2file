@@ -1,7 +1,7 @@
 {
   "name": "cache2file",
   "description": "Cache string information to files",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "author": {
     "name": "Peter Galiba",
     "email": "poetro@poetro.hu",
