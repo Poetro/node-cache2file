@@ -1,4 +1,3 @@
-[![build status](https://secure.travis-ci.org/Poetro/node-cache2file.png)](http://travis-ci.org/Poetro/node-cache2file)
 #Cache to File module for Node.js
 
 It stores cache data in files that can expire. Stored data can be in any format
